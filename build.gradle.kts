@@ -10,8 +10,7 @@ buildscript {
 apply(plugin = "app.cash.licensee")
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
+    kotlin("jvm")
     kotlin("kapt")
     id("org.jetbrains.kotlin.plugin.noarg")
     id("maven-publish")
@@ -60,67 +59,21 @@ configure<PublishingExtension> {
     }
 }
 
-kotlin {
-    jvm {
-        withJava()
-    }
-    js {
-        browser { }
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetime")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation("org.slf4j:slf4j-api:$slf4jVersion")
-                implementation("io.vertx:vertx-core:$vertxVersion")
-                implementation("io.vertx:vertx-codegen:$vertxVersion")
-                implementation("io.vertx:vertx-tcp-eventbus-bridge:$vertxVersion")
-                implementation("io.vertx:vertx-service-proxy:$vertxVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-guava:$jacksonVersion")
-                implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-                implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation("io.vertx:vertx-core:$vertxVersion")
-                implementation("com.google.guava:guava:31.1-jre")
-                implementation("junit:junit:4.13.2")
-                implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
-                implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-                implementation("com.fasterxml.jackson.datatype:jackson-datatype-guava:$jacksonVersion")
-                implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-                implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-            }
-        }
-    }
-}
-
 dependencies {
-    val kapt by configurations
-    kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
-    kapt(findProject("codegen") ?: project(":protocol:codegen"))
-}
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("io.vertx:vertx-core:$vertxVersion")
+    implementation("io.vertx:vertx-codegen:$vertxVersion")
+    implementation("io.vertx:vertx-tcp-eventbus-bridge:$vertxVersion")
+    implementation("io.vertx:vertx-service-proxy:$vertxVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-guava:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    testImplementation("junit:junit:4.13.2")
 
-configure<org.jetbrains.kotlin.noarg.gradle.NoArgExtension> {
-    annotation("kotlinx.serialization.Serializable")
+    annotationProcessor("io.vertx:vertx-codegen:$vertxVersion:processor")
+    kapt(findProject("codegen") ?: project(":protocol:codegen"))
 }
 
 tasks.withType<JavaCompile> {
